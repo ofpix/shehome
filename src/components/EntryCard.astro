@@ -1,0 +1,37 @@
+---
+const { entry, Content, permalink = true } = Astro.props;
+const entryDate = new Date(entry.data.date);
+const date = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit'
+}).format(entryDate);
+---
+<article class="entry-card">
+  <header class="entry-header">
+    <p class="entry-meta">
+      <time datetime={entry.data.date}>{date}</time>
+      <span aria-hidden="true">—</span>
+      <span>{entry.data.author}</span>
+    </p>
+    <h2 class="entry-title">
+      {permalink ? <a href={`/entries/${entry.slug}/`}>{entry.data.title}</a> : entry.data.title}
+    </h2>
+  </header>
+
+  {entry.data.image && (
+    <figure class="entry-figure">
+      <img src={entry.data.image} alt={entry.data.imageAlt || entry.data.title} loading="lazy" />
+    </figure>
+  )}
+
+  <div class="entry-body prose">
+    <Content />
+  </div>
+
+  {entry.data.tags?.length > 0 && (
+    <footer class="entry-tags">
+      {entry.data.tags.map((tag) => <span>{tag}</span>)}
+    </footer>
+  )}
+</article>

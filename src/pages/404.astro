@@ -1,0 +1,14 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { site } from '@data/site';
+---
+<BaseLayout title="404 — Not Found" currentPath="/404/">
+  <section class="page-title-block" style="text-align:center;padding:clamp(3rem,8vw,6rem) 2rem;">
+    <p class="eyebrow">404</p>
+    <h1 style="margin-bottom:0.5rem;">Not Found</h1>
+    <p style="margin:0 0 2rem;color:var(--muted);">The page you're looking for doesn't exist.</p>
+    <p style="margin:0;font-size:0.85rem;">
+      <a href="https://ofpix.com" target="_blank" rel="noopener noreferrer">OFPiX</a>
+    </p>
+  </section>
+</BaseLayout>

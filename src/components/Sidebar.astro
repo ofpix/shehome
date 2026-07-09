@@ -1,0 +1,49 @@
+---
+import { getAllAuthors } from '@data/authors';
+const { currentPath = '/', site } = Astro.props;
+const authors = await getAllAuthors();
+---
+<aside class="site-sidebar" id="site-drawer" aria-label="Site navigation">
+  <div class="sidebar-inner">
+    <header class="sidebar-header">
+      <a class="site-logo" href={site.basePath + '/'}>
+        <span class="logo-border">{site.shortName}</span>
+      </a>
+    </header>
+
+    <nav class="sidebar-nav" aria-label="Primary">
+      {site.nav.map((item) => {
+        if (item.label === 'Authors') {
+          return (
+            <div class="nav-group">
+              <a class:list={['nav-link', currentPath.startsWith(site.basePath + '/authors/') && 'is-active']} href={item.href}>
+                <span class="nav-bullet" aria-hidden="true"></span>
+                {item.label}
+              </a>
+              <div class="nav-sublist">
+                {authors.map(([name, count]) => (
+                  <a class:list={['nav-sublink', currentPath === site.basePath + '/authors/' + name + '/' && 'is-active']} href={site.basePath + '/authors/' + name + '/'}>
+                    <span class="author-dot" aria-hidden="true"></span>
+                    {name}
+                    <span class="author-count-sidebar">{count}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        }
+        return (
+          <a class:list={['nav-link', currentPath === item.href && 'is-active']} href={item.href}>
+            <span class="nav-bullet" aria-hidden="true"></span>
+            {item.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <footer class="sidebar-footer">
+      <p>{site.footer}</p>
+      <p style="margin-top:0.5rem"><a href="https://ofpix.com/shehome" target="_blank" rel="noopener noreferrer">中文版</a></p>
+    </footer>
+  </div>
+</aside>

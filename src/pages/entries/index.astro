@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { site } from '@data/site';
+
+const entries = (await getCollection('entries', ({ data }) => !data.draft))
+  .sort((a, b) => new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf());
+---
+<BaseLayout title={'All Entries'} description="Complete archive of all entries" currentPath="/entries/">
+  <section class="page-title-block">
+    <p class="eyebrow">Archive</p>
+    <h1>All Entries</h1>
+  </section>
+
+  <ol class="plain-archive">
+    {entries.map((entry) => (
+      <li>
+        <time datetime={entry.data.date}>
+          {entry.data.date}
+        </time>
+        <a href={`/entries/${entry.slug}/`}>{entry.data.title}</a>
+        <span>{entry.data.author}</span>
+      </li>
+    ))}
+  </ol>
+</BaseLayout>

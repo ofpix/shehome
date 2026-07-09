@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { site } from '@data/site';
+
+const entries = await getCollection('entries', ({ data }) => !data.draft);
+
+const authorCounts = new Map();
+for (const entry of entries) {
+  const author = entry.data.author || 'Unknown';
+  authorCounts.set(author, (authorCounts.get(author) || 0) + 1);
+}
+
+const authors = [...authorCounts.entries()]
+  .sort((a, b) => b[1] - a[1]);
+---
+<BaseLayout title={'Authors'} description="Browse all entries by author" currentPath="/authors/">
+  <section class="page-title-block">
+    <p class="eyebrow">Authors</p>
+    <h1>Authors</h1>
+    <p>{authors.length} authors, {entries.length} entries</p>
+  </section>
+
+  <section class="author-grid">
+    {authors.map(([name, count]) => (
+      <a href={`/authors/${name}/`} class="author-card">
+        <span class="author-name">{name}</span>
+        <span class="author-count">{count} entries</span>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

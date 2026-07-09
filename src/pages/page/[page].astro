@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import EntryCard from '@components/EntryCard.astro';
+import { site } from '@data/site';
+
+export async function getStaticPaths() {
+  const PER_PAGE = 36;
+
+  const allEntries = (await getCollection('entries', ({ data }) => !data.draft))
+    .sort((a, b) => new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf());
+
+  const totalPages = Math.ceil(allEntries.length / PER_PAGE);
+
+  return Array.from({ length: totalPages }, (_, i) => {
+    const pageNum = i + 1;
+    const start = i * PER_PAGE;
+    const end = start + PER_PAGE;
+    return {
+      params: { page: String(pageNum) },
+      props: {
+        entries: allEntries.slice(start, end),
+        page: pageNum,
+        totalPages
+      }
+    };
+  });
+}
+
+const PER_PAGE = 36;
+
+const { entries, page, totalPages } = Astro.props;
+
+const renderedEntries = await Promise.all(
+  entries.map(async (entry) => ({
+    entry,
+    ...(await entry.render())
+  }))
+);
+
+const prevHref = page === 2 ? '/' : `/page/${page - 1}/`;
+const nextHref = `/page/${page + 1}/`;
+---
+<BaseLayout title={`Page ${page}`} description={site.description} currentPath={`/page/${page}/`}>
+  <section class="masonry-grid" aria-label="Entries">
+    {renderedEntries.map(({ entry, Content }) => (
+      <EntryCard entry={entry} Content={Content} />
+    ))}
+  </section>
+
+  <nav class="pagination">
+    {page > 1 && <a href={prevHref} class="pagination-prev">← Previous</a>}
+    <span class="pagination-info">Page {page} / {totalPages}</span>
+    {page < totalPages && <a href={nextHref} class="pagination-next">Next →</a>}
+  </nav>
+</BaseLayout>

@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import EntryCard from '@components/EntryCard.astro';
+import { site } from '@data/site';
+
+const PER_PAGE = 36;
+
+const allEntries = (await getCollection('entries', ({ data }) => !data.draft))
+  .sort((a, b) => new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf());
+
+const pageEntries = allEntries.slice(0, PER_PAGE);
+const totalPages = Math.ceil(allEntries.length / PER_PAGE);
+
+const renderedEntries = await Promise.all(
+  pageEntries.map(async (entry) => ({
+    entry,
+    ...(await entry.render())
+  }))
+);
+---
+<BaseLayout title={site.name} description={site.description} currentPath="/">
+
+  <section class="masonry-grid" aria-label="Entries">
+    {renderedEntries.map(({ entry, Content }) => (
+      <EntryCard entry={entry} Content={Content} />
+    ))}
+  </section>
+
+  {totalPages > 1 && (
+    <nav class="pagination">
+      <a href="/page/2/" class="pagination-next">Next →</a>
+    </nav>
+  )}
+</BaseLayout>

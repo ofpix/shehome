@@ -1,0 +1,11 @@
+---
+import IconButton from './IconButton.astro';
+const { site } = Astro.props;
+---
+<header class="mobile-header">
+  <IconButton label="Open navigation" />
+  <a href={site.basePath + '/'} class="mobile-title">
+    <strong>{site.shortName}</strong>
+  </a>
+</header>
+<div class="drawer-scrim" id="drawer-scrim" hidden></div>

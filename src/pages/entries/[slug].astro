@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { site } from '@data/site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('entries', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const entryDate = new Date(entry.data.date);
+const dateStr = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric', month: '2-digit', day: '2-digit'
+}).format(entryDate);
+
+const pageTitle = `${dateStr} — ${entry.data.author}`;
+
+const bodyPreview = entry.body
+  ? entry.body.trim().slice(0, 200).replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
+  : null;
+const metaDescription = bodyPreview
+  ? `${pageTitle} — ${bodyPreview}${entry.body.length > 200 ? '…' : ''}`
+  : pageTitle;
+---
+<BaseLayout
+  title={pageTitle}
+  description={metaDescription}
+  image={entry.data.image ? entry.data.image : undefined}
+  currentPath={`/entries/${entry.slug}/`}
+>
+  <article class="entry-single">
+    <header class="entry-single-header">
+      <p class="entry-single-meta">
+        <time datetime={entry.data.date}>{dateStr}</time>
+        <span aria-hidden="true">—</span>
+        <span>{entry.data.author}</span>
+      </p>
+    </header>
+
+    {entry.data.image && (
+      <figure class="entry-single-figure">
+        <img src={entry.data.image} alt={entry.data.imageAlt || ''} />
+      </figure>
+    )}
+
+    <div class="entry-single-body">
+      <Content />
+    </div>
+
+    {entry.data.tags?.length > 0 && (
+      <footer class="entry-tags">
+        {entry.data.tags.map((tag) => <span>{tag}</span>)}
+      </footer>
+    )}
+
+    <p class="back-link"><a href="/">← Back to home</a></p>
+  </article>
+</BaseLayout>

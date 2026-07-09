@@ -1,0 +1,86 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import EntryCard from '@components/EntryCard.astro';
+import { site } from '@data/site';
+
+export async function getStaticPaths() {
+  const PER_PAGE = 36;
+  const entries = await getCollection('entries', ({ data }) => !data.draft);
+
+  const authorEntries = new Map();
+  for (const entry of entries) {
+    const author = entry.data.author || 'Unknown';
+    if (!authorEntries.has(author)) authorEntries.set(author, []);
+    authorEntries.get(author).push(entry);
+  }
+
+  const paths = [];
+  for (const [authorName, authorEntryList] of authorEntries.entries()) {
+    const sorted = authorEntryList.sort(
+      (a, b) => new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf()
+    );
+    const totalPages = Math.ceil(sorted.length / PER_PAGE);
+
+    for (let p = 0; p < totalPages; p++) {
+      const start = p * PER_PAGE;
+      const end = start + PER_PAGE;
+      const slug = p === 0 ? authorName : `${authorName}/${p + 1}`;
+      paths.push({
+        params: { slug },
+        props: {
+          authorName,
+          entries: sorted.slice(start, end),
+          page: p + 1,
+          totalPages
+        }
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { authorName, page, totalPages, entries } = Astro.props;
+const renderedEntries = await Promise.all(
+  entries.map(async (entry) => ({
+    entry,
+    ...(await entry.render())
+  }))
+);
+---
+<BaseLayout
+  title={page > 1 ? `${authorName} (Page ${page})` : authorName}
+  description={`All entries by ${authorName}, ${entries.length} total`}
+  site={site}
+>
+  <section class="page-title-block">
+    <p class="eyebrow">Author</p>
+    <h1>{authorName}</h1>
+    <p>{entries.length} entries</p>
+  </section>
+
+  <section class="masonry-grid" aria-label="Entries">
+    {renderedEntries.map(({ entry, Content }) => (
+      <EntryCard entry={entry} Content={Content} />
+    ))}
+  </section>
+
+  {totalPages > 1 && (
+    <nav class="pagination">
+      {page > 1 && (
+        <a href={page === 2 ? `/authors/${authorName}/` : `/authors/${authorName}/${page - 1}/`} class="pagination-prev">
+          ← Previous
+        </a>
+      )}
+      <span class="pagination-info">Page {page} / {totalPages}</span>
+      {page < totalPages && (
+        <a href={`/authors/${authorName}/${page + 1}/`} class="pagination-next">
+          Next →
+        </a>
+      )}
+    </nav>
+  )}
+
+  <p class="back-link"><a href="/authors/">← All authors</a></p>
+</BaseLayout>
