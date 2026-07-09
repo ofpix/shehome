@@ -21,36 +21,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - name: Download site images
+        run: |
+          gh release download v1.0.0-images \
+            --repo ofpix/shehome \
+            --pattern "shehome-images.tar.gz" \
+            --dir /tmp
+          mkdir -p public/images
+          tar -xzf /tmp/shehome-images.tar.gz -C public/images/
+          rm /tmp/shehome-images.tar.gz
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: npm
 
-      - name: Install
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        env:
-          SITE_URL: ${{ vars.SITE_URL || format('https://{0}.github.io', github.repository_owner) }}
-          BASE_PATH: ${{ vars.BASE_PATH || format('/{0}/', github.event.repository.name) }}
+      - name: Build site
         run: npm run build
+        env:
+          SITE_URL: https://ofpix.github.io/shehome
+          BASE_PATH: /shehome
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: dist
 
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     needs: build
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: https://ofpix.github.io/shehome
     steps:
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
