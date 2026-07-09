@@ -23,7 +23,7 @@ const date = new Intl.DateTimeFormat('en-US', {
 
   {entry.data.image && (
     <figure class="entry-figure">
-      <img src={entry.data.image} alt={entry.data.imageAlt || entry.data.title} loading="lazy" />
+      <img src={withBase(entry.data.image)} alt={entry.data.imageAlt || entry.data.title} loading="lazy" />
     </figure>
   )}
 

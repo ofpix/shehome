@@ -31,7 +31,7 @@ const metaDescription = bodyPreview
 <BaseLayout
   title={pageTitle}
   description={metaDescription}
-  image={entry.data.image ? entry.data.image : undefined}
+  image={entry.data.image ? withBase(entry.data.image) : undefined}
   currentPath={withBase(`/entries/${entry.slug}/`)}
 >
   <article class="entry-single">
@@ -45,7 +45,7 @@ const metaDescription = bodyPreview
 
     {entry.data.image && (
       <figure class="entry-single-figure">
-        <img src={entry.data.image} alt={entry.data.imageAlt || ''} />
+        <img src={withBase(entry.data.image)} alt={entry.data.imageAlt || ''} />
       </figure>
     )}
 
