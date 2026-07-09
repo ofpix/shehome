@@ -310,9 +310,9 @@ img {
 .entry-title {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  font-size: clamp(0.88rem, 1.3vw, 1.08rem);
   font-weight: 500;
-  line-height: 1.15;
+  line-height: 1.3;
 }
 
 .entry-title a {
