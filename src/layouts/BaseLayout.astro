@@ -1,7 +1,7 @@
 ---
 import Sidebar from '@components/Sidebar.astro';
 import MobileHeader from '@components/MobileHeader.astro';
-import { site as defaultSite } from '@data/site';
+import { site as defaultSite, withBase } from '@data/site';
 import '@styles/global.css';
 
 const activeSite = Astro.props.site || defaultSite;
@@ -46,7 +46,7 @@ const fullURL = canonicalURL || (Astro.url.origin + currentPath);
     {ogImage && <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : Astro.url.origin + ogImage} />}
 
     <!-- RSS / Sitemap hints -->
-    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    <link rel="sitemap" type="application/xml" href={withBase('/sitemap-index.xml')} />
   </head>
   <body class={bodyClass}>
     <a class="skip-link" href="#main">Skip to content</a>

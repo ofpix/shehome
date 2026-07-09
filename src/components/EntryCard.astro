@@ -1,4 +1,6 @@
 ---
+import { withBase } from '@data/site';
+
 const { entry, Content, permalink = true } = Astro.props;
 const entryDate = new Date(entry.data.date);
 const date = new Intl.DateTimeFormat('en-US', {
@@ -15,7 +17,7 @@ const date = new Intl.DateTimeFormat('en-US', {
       <span>{entry.data.author}</span>
     </p>
     <h2 class="entry-title">
-      {permalink ? <a href={`/entries/${entry.slug}/`}>{entry.data.title}</a> : entry.data.title}
+      {permalink ? <a href={withBase(`/entries/${entry.slug}/`)}>{entry.data.title}</a> : entry.data.title}
     </h2>
   </header>
 

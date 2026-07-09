@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import EntryCard from '@components/EntryCard.astro';
-import { site } from '@data/site';
+import { site, withBase } from '@data/site';
 
 const PER_PAGE = 36;
 
@@ -19,7 +19,8 @@ const renderedEntries = await Promise.all(
   }))
 );
 ---
-<BaseLayout title={site.name} description={site.description} currentPath="/">
+<BaseLayout title={site.name} description={site.description} currentPath={withBase('/')}>
+
 
   <section class="masonry-grid" aria-label="Entries">
     {renderedEntries.map(({ entry, Content }) => (
@@ -29,7 +30,7 @@ const renderedEntries = await Promise.all(
 
   {totalPages > 1 && (
     <nav class="pagination">
-      <a href="/page/2/" class="pagination-next">Next →</a>
+      <a href={withBase('/page/2/')} class="pagination-next">Next →</a>
     </nav>
   )}
 </BaseLayout>

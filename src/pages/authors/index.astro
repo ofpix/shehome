@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { site } from '@data/site';
+import { site, withBase } from '@data/site';
 
 const entries = await getCollection('entries', ({ data }) => !data.draft);
 
@@ -14,7 +14,7 @@ for (const entry of entries) {
 const authors = [...authorCounts.entries()]
   .sort((a, b) => b[1] - a[1]);
 ---
-<BaseLayout title={'Authors'} description="Browse all entries by author" currentPath="/authors/">
+<BaseLayout title={'Authors'} description="Browse all entries by author" currentPath={withBase('/authors/')}>
   <section class="page-title-block">
     <p class="eyebrow">Authors</p>
     <h1>Authors</h1>
@@ -23,7 +23,7 @@ const authors = [...authorCounts.entries()]
 
   <section class="author-grid">
     {authors.map(([name, count]) => (
-      <a href={`/authors/${name}/`} class="author-card">
+      <a href={withBase(`/authors/${name}/`)} class="author-card">
         <span class="author-name">{name}</span>
         <span class="author-count">{count} entries</span>
       </a>

@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import EntryCard from '@components/EntryCard.astro';
-import { site } from '@data/site';
+import { site, withBase } from '@data/site';
 
 export async function getStaticPaths() {
   const PER_PAGE = 36;
@@ -69,18 +69,18 @@ const renderedEntries = await Promise.all(
   {totalPages > 1 && (
     <nav class="pagination">
       {page > 1 && (
-        <a href={page === 2 ? `/authors/${authorName}/` : `/authors/${authorName}/${page - 1}/`} class="pagination-prev">
+        <a href={page === 2 ? withBase(`/authors/${authorName}/`) : withBase(`/authors/${authorName}/${page - 1}/`)} class="pagination-prev">
           ← Previous
         </a>
       )}
       <span class="pagination-info">Page {page} / {totalPages}</span>
       {page < totalPages && (
-        <a href={`/authors/${authorName}/${page + 1}/`} class="pagination-next">
+        <a href={withBase(`/authors/${authorName}/${page + 1}/`)} class="pagination-next">
           Next →
         </a>
       )}
     </nav>
   )}
 
-  <p class="back-link"><a href="/authors/">← All authors</a></p>
+  <p class="back-link"><a href={withBase('/authors/')}>← All authors</a></p>
 </BaseLayout>

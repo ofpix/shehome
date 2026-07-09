@@ -1,11 +1,11 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { site } from '@data/site';
+import { site, withBase } from '@data/site';
 ---
 <BaseLayout
   title={'About'}
   description="She.Home is a mobile photography and social network project that began in early 2013."
-  currentPath="/about/"
+  currentPath={withBase('/about/')}
 >
   <section class="page-title-block">
     <p class="eyebrow">About</p>

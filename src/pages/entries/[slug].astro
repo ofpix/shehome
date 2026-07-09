@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { site } from '@data/site';
+import { site, withBase } from '@data/site';
 
 export async function getStaticPaths() {
   const entries = await getCollection('entries', ({ data }) => !data.draft);
@@ -32,7 +32,7 @@ const metaDescription = bodyPreview
   title={pageTitle}
   description={metaDescription}
   image={entry.data.image ? entry.data.image : undefined}
-  currentPath={`/entries/${entry.slug}/`}
+  currentPath={withBase(`/entries/${entry.slug}/`)}
 >
   <article class="entry-single">
     <header class="entry-single-header">
